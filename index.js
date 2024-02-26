@@ -32,6 +32,19 @@ async function run() {
 
         // Database collections
         const productsCollection = client.db('apparel_avenue_db').collection('products');
+        const usersCollection = client.db('apparel_avenue_db').collection('users');
+
+        // send user(s) data api
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email };
+            const existingUser = await usersCollection.findOne(query);
+            if (existingUser) {
+                return res.send({ message: "User already exists" })
+            }
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
 
         //get all products api
         app.get('/products', async (req, res) => {
