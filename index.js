@@ -31,8 +31,9 @@ async function run() {
         await client.connect();
 
         // Database collections
-        const productsCollection = client.db('apparel_avenue_db').collection('products');
         const usersCollection = client.db('apparel_avenue_db').collection('users');
+        const productsCollection = client.db('apparel_avenue_db').collection('products');
+        const cartCollection = client.db('apparel_avenue_db').collection('cart');
 
         // send user(s) data api
         app.post('/users', async (req, res) => {
@@ -85,6 +86,24 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const result = await productsCollection.findOne(query);
             res.send(result);
+        });
+
+        // send product to cart api
+        app.post('/cart', async (req, res) => {
+            const product = req.body;
+            const { productName, userEmail } = req.body;
+
+            const existingProduct = await cartCollection.findOne({
+                productName: productName,
+                userEmail: userEmail
+            });
+
+            if (existingProduct) {
+                return res.status(400).json({ error: 'Product already exists in the cart' });
+            };
+
+            const result = await cartCollection.insertOne(product);
+            res.json(result);
         });
 
         // Send a ping to confirm a successful connection
