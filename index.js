@@ -115,6 +115,14 @@ async function run() {
             res.send(result);
         });
 
+        // delete from cart api
+        app.delete('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await cartCollection.deleteOne(query);
+            res.send(result);
+        });
+
         // get all promocodes from db api
         app.get('/promocodes', async (req, res) => {
             const result = await promocodesCollection.find().toArray();
