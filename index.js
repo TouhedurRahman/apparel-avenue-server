@@ -34,6 +34,7 @@ async function run() {
         const usersCollection = client.db('apparel_avenue_db').collection('users');
         const productsCollection = client.db('apparel_avenue_db').collection('products');
         const cartCollection = client.db('apparel_avenue_db').collection('cart');
+        const promocodesCollection = client.db('apparel_avenue_db').collection('promocodes');
 
         // send user(s) data api
         app.post('/users', async (req, res) => {
@@ -111,6 +112,12 @@ async function run() {
             const email = req.params.email;
             const query = { userEmail: email }
             const result = await cartCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        // get all promocodes from db api
+        app.get('/promocodes', async (req, res) => {
+            const result = await promocodesCollection.find().toArray();
             res.send(result);
         });
 
