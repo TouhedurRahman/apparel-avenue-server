@@ -6,6 +6,7 @@ const {
 } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -13,6 +14,24 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(cors());
 app.use(express.json());
+
+// verify jwt
+const verifyJWT = (req, res, next) => {
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+        return res.status(401).send({ error: true, message: 'Unauthorized Access' });
+    }
+    // bearer token
+    const token = authorization.split(' ')[1];
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
+        if (error) {
+            return res.status(401).send({ error: true, message: 'Unauthorized Access' });
+        }
+        req.decoded = decoded;
+        next();
+    });
+};
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.yrcmf.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -35,6 +54,13 @@ async function run() {
         const productsCollection = client.db('apparel_avenue_db').collection('products');
         const cartCollection = client.db('apparel_avenue_db').collection('cart');
         const promocodesCollection = client.db('apparel_avenue_db').collection('promocodes');
+
+        // send jwt token api
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            res.send({ token });
+        });
 
         // send user(s) data api
         app.post('/users', async (req, res) => {
