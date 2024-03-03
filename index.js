@@ -57,6 +57,7 @@ async function run() {
         const productsCollection = client.db('apparel_avenue_db').collection('products');
         const cartCollection = client.db('apparel_avenue_db').collection('cart');
         const promocodesCollection = client.db('apparel_avenue_db').collection('promocodes');
+        const ordersCollection = client.db('apparel_avenue_db').collection('orders');
 
         // send jwt token api
         app.post('/jwt', (req, res) => {
@@ -173,6 +174,24 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret,
             });
+        });
+
+        //orders add to db and items delete from cart api
+        app.post('/orders', verifyJWT, async (req, res) => {
+            const order = req.body;
+            const insertResult = await ordersCollection.insertOne(order);
+
+            const deleteQuery = {
+                _id: {
+                    $in: order.orderProductsId.map(id => new ObjectId(id))
+                }
+            }
+            const deleteResult = await cartCollection.deleteMany(deleteQuery);
+
+            //send an email
+            // sendPaymentConfirmationEmail(payment);
+
+            res.send({ insertResult, deleteResult });
         });
 
         // Send a ping to confirm a successful connection
