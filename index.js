@@ -176,7 +176,7 @@ async function run() {
             });
         });
 
-        //orders add to db and items delete from cart api
+        // orders add to db and items delete from cart api
         app.post('/orders', verifyJWT, async (req, res) => {
             const order = req.body;
             const insertResult = await ordersCollection.insertOne(order);
@@ -186,12 +186,13 @@ async function run() {
                     $in: order.orderProductsId.map(id => new ObjectId(id))
                 }
             }
-            const deleteResult = await cartCollection.deleteMany(deleteQuery);
 
-            //send an email
-            // sendPaymentConfirmationEmail(payment);
-
-            res.send({ insertResult, deleteResult });
+            if (deleteQuery) {
+                const deleteResult = await cartCollection.deleteMany(deleteQuery);
+                res.send({ insertResult, deleteResult });
+            } else {
+                res.send({ insertResult });
+            }
         });
 
         // Send a ping to confirm a successful connection
