@@ -119,6 +119,33 @@ async function run() {
             res.send(result);
         });
 
+        // get all products category for male api
+        app.get('/mensproductcategory', async (req, res) => {
+            const query = {
+                forGender: 'male'
+            }
+            const result = await productsCollection.find(query).project({ category: 1 }).toArray();
+            res.send(result);
+        })
+
+        // get all products category for female api
+        app.get('/womensproductcategory', async (req, res) => {
+            const query = {
+                forGender: 'female'
+            }
+            const result = await productsCollection.find(query).project({ category: 1 }).toArray();
+            res.send(result);
+        })
+
+        // get all products category for kids api
+        app.get('/kidsproductcategory', async (req, res) => {
+            const query = {
+                forGender: 'kids'
+            }
+            const result = await productsCollection.find(query).project({ category: 1 }).toArray();
+            res.send(result);
+        })
+
         // send product to cart api
         app.post('/cart', async (req, res) => {
             const product = req.body;
