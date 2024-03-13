@@ -180,6 +180,14 @@ async function run() {
             res.send(result);
         });
 
+        // add new promocode api
+        app.post('/promocodes', async (req, res) => {
+            const newPromo = req.body;
+            newPromo.createdAt = new Date();
+            const result = await promocodesCollection.insertOne(newPromo);
+            res.send(result);
+        });
+
         // get all promocodes from db api
         app.get('/promocodes', async (req, res) => {
             const result = await promocodesCollection.find().toArray();
