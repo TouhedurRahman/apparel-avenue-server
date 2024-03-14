@@ -194,6 +194,14 @@ async function run() {
             res.send(result);
         });
 
+        // get single promocode api
+        app.get("/promocode/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await promocodesCollection.findOne(query);
+            res.send(result);
+        });
+
         // create payment intent api
         app.post("/create-payment-intent", verifyJWT, async (req, res) => {
             const { price } = req.body;
