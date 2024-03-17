@@ -78,6 +78,12 @@ async function run() {
             res.send(result);
         });
 
+        // get all user(s) api
+        app.get('/users', verifyJWT, async (req, res) => {
+            const result = await usersCollection.find().toArray();
+            res.send(result);
+        })
+
         // get single user(s) api
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
