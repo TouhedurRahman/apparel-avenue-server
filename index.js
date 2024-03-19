@@ -82,7 +82,20 @@ async function run() {
         app.get('/users', verifyJWT, async (req, res) => {
             const result = await usersCollection.find().toArray();
             res.send(result);
-        })
+        });
+
+        // update user's role api
+        app.patch('/users/admin/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: {
+                    role: 'admin'
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
 
         // get single user(s) api
         app.get('/user/:email', async (req, res) => {
