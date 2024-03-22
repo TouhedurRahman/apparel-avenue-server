@@ -124,9 +124,17 @@ async function run() {
             res.send(result);
         });
 
+        // add new product api
+        app.post('/products', async (req, res) => {
+            const newProduct = req.body;
+            newProduct.createdAt = new Date();
+            const result = await productsCollection.insertOne(newProduct);
+            res.send(result);
+        });
+
         //get all products api
         app.get('/products', async (req, res) => {
-            const result = await productsCollection.find().toArray();
+            const result = await productsCollection.find().sort({ _id: -1 }).toArray();
             res.send(result);
         });
 
